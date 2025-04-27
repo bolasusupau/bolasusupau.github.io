@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Peta Leaflet dengan Beberapa Titik</title>
+  <title>Kunjungan Tanggal Senin, 28 April 2025</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -18,17 +18,57 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Data koordinat beberapa titik
+    // Data koordinat beberapa titik lainnya (static)
     var titik = [
       [-6.998620, 107.634131],
       [-6.995318, 107.635883],
       [-6.996176, 107.636437]
     ];
 
-    // Loop semua titik dan buat marker
+    // Loop semua titik dan buat marker biasa
     titik.forEach(function (koordinat) {
       L.marker(koordinat).addTo(map);
     });
+
+    // Lokasi khusus (lokasi saya)
+    var lokasiSaya = [-6.997, 107.635];
+
+    // Buat marker khusus untuk "saya"
+    var myIcon = L.icon({
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png', // contoh icon custom
+      iconSize: [38, 38], // ukuran ikon
+      iconAnchor: [19, 38], // posisi titik ikon
+      popupAnchor: [0, -38] // posisi popup relatif ke ikon
+    });
+
+    // Marker untuk posisi saya (akan diperbarui secara live)
+    var myMarker = L.marker(lokasiSaya, {icon: myIcon}).addTo(map);
+    myMarker.bindPopup('Saya di sini!').openPopup();
+
+    // Fungsi untuk mendapatkan lokasi saya secara live
+    function updateLocation(position) {
+      var lat = position.coords.latitude;
+      var lng = position.coords.longitude;
+
+      // Update marker ke lokasi baru
+      myMarker.setLatLng([lat, lng]);
+
+      // Update peta agar tetap fokus pada lokasi saya
+      map.setView([lat, lng], 15);  // Ganti level zoom jika perlu
+    }
+
+    // Cek jika geolocation tersedia dan dapatkan lokasi pengguna
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(updateLocation, function(error) {
+        alert("Tidak dapat mengambil lokasi Anda.");
+      }, {
+        enableHighAccuracy: true,
+        timeout: 10000,  // timeout jika tidak berhasil dalam 10 detik
+        maximumAge: 0    // jangan gunakan lokasi yang sudah terlalu lama
+      });
+    } else {
+      alert("Geolocation tidak didukung di browser ini.");
+    }
   </script>
 </body>
 </html>
