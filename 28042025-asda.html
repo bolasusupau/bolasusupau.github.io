@@ -18,29 +18,67 @@
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // Data koordinat beberapa titik lainnya (static)
+    // Data titik dengan koordinat dan warna (untuk memudahkan penggantian)
     var titik = [
-      [-6.998620, 107.634131], // Titik 1
-      [-6.995318, 107.635883], // Titik 2
-      [-6.996176, 107.636437]  // Titik 3
+      {
+        koordinat: [-6.9857917, 107.6448421],
+        warna: 'green',
+        popup: 'Warung Pak Amas'
+      },
+      {
+        koordinat: [-6.9880258, 107.6468441],
+        warna: 'green',
+        popup: 'Titik 2'
+      },
+      {
+        koordinat: [-6.9886601, 107.6520015],
+        warna: 'green',
+        popup: 'MUR BAUT & ALAT TEKNIK'
+      },
+      {
+        koordinat: [-7.0053033, 107.6495618],
+        warna: 'yellow',
+        popup: 'Titik 4'
+      },
+      {
+        koordinat: [-7.0065547, 107.6545212],
+        warna: 'yellow',
+        popup: 'Titik 5'
+      },
+      {
+        koordinat: [-7.0033815, 107.6583764],
+        warna: 'yellow',
+        popup: 'Titik 6'
+      },
+      {
+        koordinat: [-6.970812, 107.6507261],
+        warna: 'green',
+        popup: 'Titik 7'
+      },
+      {
+        koordinat: [-6.9687327, 107.6499555],
+        warna: 'green',
+        popup: 'Warung Teh Enni'
+      },
+      {
+        koordinat: [-6.975835, 107.649511],
+        warna: 'green',
+        popup: 'Titik 9'
+      }
     ];
 
-    // Warna marker untuk setiap titik
-    var warnaTitik = ['green', 'yellow', 'red'];  // Hijau, Kuning, Merah
-
-    // Loop semua titik dan buat marker dengan warna berbeda
-    titik.forEach(function (koordinat, index) {
-      var warna = warnaTitik[index]; // Pilih warna berdasarkan index
-      L.circleMarker(koordinat, {
-        color: warna,  // Warna garis marker
-        fillColor: warna, // Warna isi marker
+    // Loop untuk menambahkan marker dengan warna berbeda sesuai data
+    titik.forEach(function (item) {
+      L.circleMarker(item.koordinat, {
+        color: item.warna,  // Warna garis marker
+        fillColor: item.warna, // Warna isi marker
         fillOpacity: 0.7,  // Opasitas warna isi
         radius: 10  // Ukuran marker
       }).addTo(map)
-      .bindPopup('Titik ' + (index + 1));  // Popup yang menunjukkan nomor titik
+      .bindPopup(item.popup);  // Menampilkan popup dengan nama titik
     });
 
-    // Lokasi khusus (lokasi saya)
+    // Lokasi khusus (lokasi saya) - Menambahkan titik kamu sendiri (contoh)
     var lokasiSaya = [-6.997, 107.635];
 
     // Buat marker khusus untuk "saya"
