@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Kunjungan Tanggal Senin, 28 April 2025</title>
+  <title>Peta Kunjungan Senini, 28 April 2025</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -20,14 +20,24 @@
 
     // Data koordinat beberapa titik lainnya (static)
     var titik = [
-      [-6.998620, 107.634131],
-      [-6.995318, 107.635883],
-      [-6.996176, 107.636437]
+      [-6.998620, 107.634131], // Titik 1
+      [-6.995318, 107.635883], // Titik 2
+      [-6.996176, 107.636437]  // Titik 3
     ];
 
-    // Loop semua titik dan buat marker biasa
-    titik.forEach(function (koordinat) {
-      L.marker(koordinat).addTo(map);
+    // Warna marker untuk setiap titik
+    var warnaTitik = ['green', 'yellow', 'red'];  // Hijau, Kuning, Merah
+
+    // Loop semua titik dan buat marker dengan warna berbeda
+    titik.forEach(function (koordinat, index) {
+      var warna = warnaTitik[index]; // Pilih warna berdasarkan index
+      L.circleMarker(koordinat, {
+        color: warna,  // Warna garis marker
+        fillColor: warna, // Warna isi marker
+        fillOpacity: 0.7,  // Opasitas warna isi
+        radius: 10  // Ukuran marker
+      }).addTo(map)
+      .bindPopup('Titik ' + (index + 1));  // Popup yang menunjukkan nomor titik
     });
 
     // Lokasi khusus (lokasi saya)
