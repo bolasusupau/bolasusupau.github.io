@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Peta Leaflet dengan Beberapa Titik</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <div id="map" style="height: 100vh;"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Inisialisasi peta
+    var map = L.map('map').setView([-6.997, 107.635], 15);
+
+    // Tambahkan layer peta
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Data koordinat beberapa titik
+    var titik = [
+      [-6.998620, 107.634131],
+      [-6.995318, 107.635883],
+      [-6.996176, 107.636437]
+    ];
+
+    // Loop semua titik dan buat marker
+    titik.forEach(function (koordinat) {
+      L.marker(koordinat).addTo(map);
+    });
+  </script>
+</body>
+</html>
