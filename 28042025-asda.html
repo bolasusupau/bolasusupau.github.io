@@ -4,9 +4,28 @@
   <meta charset="UTF-8">
   <title>Peta Kunjungan Senini, 28 April 2025</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* Styling untuk tombol */
+    #locateButton {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    #locateButton:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
   <div id="map" style="height: 100vh;"></div>
+  <button id="locateButton">Kembali ke Lokasi Saya</button>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
@@ -20,51 +39,15 @@
 
     // Data titik dengan koordinat dan warna (untuk memudahkan penggantian)
     var titik = [
-      {
-        koordinat: [-6.9857917, 107.6448421],
-        warna: 'green',
-        popup: 'Warung Pak Amas'
-      },
-      {
-        koordinat: [-6.9880258, 107.6468441],
-        warna: 'green',
-        popup: 'Titik 2'
-      },
-      {
-        koordinat: [-6.9886601, 107.6520015],
-        warna: 'green',
-        popup: 'MUR BAUT & ALAT TEKNIK'
-      },
-      {
-        koordinat: [-7.0053033, 107.6495618],
-        warna: 'yellow',
-        popup: 'Titik 4'
-      },
-      {
-        koordinat: [-7.0065547, 107.6545212],
-        warna: 'yellow',
-        popup: 'Titik 5'
-      },
-      {
-        koordinat: [-7.0033815, 107.6583764],
-        warna: 'yellow',
-        popup: 'Titik 6'
-      },
-      {
-        koordinat: [-6.970812, 107.6507261],
-        warna: 'red',
-        popup: 'Titik 7'
-      },
-      {
-        koordinat: [-6.9687327, 107.6499555],
-        warna: 'red',
-        popup: 'Warung Teh Enni'
-      },
-      {
-        koordinat: [-6.975835, 107.649511],
-        warna: 'red',
-        popup: 'Titik 9'
-      }
+      { koordinat: [-6.9857917, 107.6448421], warna: 'green', popup: 'Warung Pak Amas' },
+      { koordinat: [-6.9880258, 107.6468441], warna: 'green', popup: 'Titik 2' },
+      { koordinat: [-6.9886601, 107.6520015], warna: 'green', popup: 'MUR BAUT & ALAT TEKNIK' },
+      { koordinat: [-7.0053033, 107.6495618], warna: 'yellow', popup: 'Titik 4' },
+      { koordinat: [-7.0065547, 107.6545212], warna: 'yellow', popup: 'Titik 5' },
+      { koordinat: [-7.0033815, 107.6583764], warna: 'yellow', popup: 'Titik 6' },
+      { koordinat: [-6.970812, 107.6507261], warna: 'red', popup: 'Titik 7' },
+      { koordinat: [-6.9687327, 107.6499555], warna: 'red', popup: 'Warung Teh Enni' },
+      { koordinat: [-6.975835, 107.649511], warna: 'red', popup: 'Titik 9' }
     ];
 
     // Loop untuk menambahkan marker dengan warna berbeda sesuai data
@@ -89,8 +72,8 @@
       popupAnchor: [0, -38] // posisi popup relatif ke ikon
     });
 
-    // Marker untuk posisi saya (akan diperbarui secara live)
-    var myMarker = L.marker(lokasiSaya, {icon: myIcon}).addTo(map);
+    // Marker untuk posisi saya
+    var myMarker = L.marker(lokasiSaya, { icon: myIcon }).addTo(map);
     myMarker.bindPopup('Saya di sini!').openPopup();
 
     // Fungsi untuk mendapatkan lokasi saya secara live
@@ -100,14 +83,11 @@
 
       // Update marker ke lokasi baru
       myMarker.setLatLng([lat, lng]);
-
-      // Update peta agar tetap fokus pada lokasi saya
-      map.setView([lat, lng], 15);  // Ganti level zoom jika perlu
     }
 
     // Cek jika geolocation tersedia dan dapatkan lokasi pengguna
     if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(updateLocation, function(error) {
+      navigator.geolocation.watchPosition(updateLocation, function (error) {
         alert("Tidak dapat mengambil lokasi Anda.");
       }, {
         enableHighAccuracy: true,
@@ -117,6 +97,12 @@
     } else {
       alert("Geolocation tidak didukung di browser ini.");
     }
+
+    // Tombol untuk mengembalikan tampilan ke lokasi saya
+    document.getElementById('locateButton').addEventListener('click', function () {
+      map.setView(lokasiSaya, 15);  // Pindahkan tampilan peta ke lokasi saya
+    });
+
   </script>
 </body>
 </html>
