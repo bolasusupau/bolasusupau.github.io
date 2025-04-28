@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     /* Styling untuk tombol */
-    #locateButton, #filterDropdown {
+    #locateButton, #filterDropdown, #packFilterDropdown {
       position: absolute;
       bottom: 20px;
       background-color: #4CAF50;
@@ -19,7 +19,7 @@
       transition: background-color 0.3s, transform 0.2s;
     }
 
-    #locateButton:hover, #filterDropdown:hover {
+    #locateButton:hover, #filterDropdown:hover, #packFilterDropdown:hover {
       background-color: #45a049;
       transform: scale(1.05);
     }
@@ -33,6 +33,11 @@
     #filterDropdown {
       left: 120px;
       background-color: #008CBA;
+    }
+
+    #packFilterDropdown {
+      left: 220px;
+      background-color: #ff9800;
     }
 
     /* Styling untuk popup panel keterangan */
@@ -102,17 +107,22 @@
     .leaflet-popup-content button:hover {
       background-color: #007bb5;
     }
-
   </style>
 </head>
 <body>
   <div id="map" style="height: 100vh;"></div>
   <button id="locateButton">Kembali ke Lokasi Saya</button>
   <select id="filterDropdown">
-    <option value="all">Tanpa Filter</option>
+    <option value="all">Tanpa Filter Warna</option>
     <option value="red">Filter Merah</option>
     <option value="green">Filter Hijau</option>
     <option value="yellow">Filter Kuning</option>
+  </select>
+  <select id="packFilterDropdown">
+    <option value="all">Tanpa Filter Pack</option>
+    <option value="30">Pack 30</option>
+    <option value="50">Pack 50</option>
+    <option value=">50">Pack >50</option>
   </select>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -127,15 +137,15 @@
 
     // Data titik dengan koordinat, warna, deskripsi dan gambar
     var titik = [
-      { koordinat: [-6.9857917, 107.6448421], warna: 'green', popup: 'Warung Pak Amas', description: 'Warung Pak Amas menjual makanan ringan dan minuman.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-6.9880258, 107.6468441], warna: 'green', popup: 'Titik 2', description: 'Ini adalah titik kedua yang memiliki banyak pengunjung.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-6.9886601, 107.6520015], warna: 'green', popup: 'MUR BAUT & ALAT TEKNIK', description: 'Toko alat teknik dengan berbagai kebutuhan industri.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-7.0053033, 107.6495618], warna: 'yellow', popup: 'Titik 4', description: 'Titik keempat ini merupakan lokasi penting di area tersebut.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-7.0065547, 107.6545212], warna: 'yellow', popup: 'Titik 5', description: 'Titik kelima terletak di pusat perbelanjaan.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-7.0033815, 107.6583764], warna: 'yellow', popup: 'Titik 6', description: 'Titik keenam adalah lokasi yang ramai dikunjungi di siang hari.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-6.970812, 107.6507261], warna: 'red', popup: 'Titik 7', description: 'Titik ketujuh berada di pinggir jalan utama.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-6.9687327, 107.6499555], warna: 'red', popup: 'Warung Teh Enni', description: 'Warung Teh Enni terkenal dengan teh seduh yang segar.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
-      { koordinat: [-6.975835, 107.649511], warna: 'red', popup: 'Titik 9', description: 'Titik sembilan memiliki banyak fasilitas parkir.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' }
+      { koordinat: [-6.9857917, 107.6448421], warna: 'green', popup: 'Warung Pak Amas', description: 'Warung Pak Amas menjual makanan ringan dan minuman.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '50' },
+      { koordinat: [-6.9880258, 107.6468441], warna: 'green', popup: 'Titik 2', description: 'Ini adalah titik kedua yang memiliki banyak pengunjung.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '30' },
+      { koordinat: [-6.9886601, 107.6520015], warna: 'green', popup: 'MUR BAUT & ALAT TEKNIK', description: 'Toko alat teknik dengan berbagai kebutuhan industri.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '>50' },
+      { koordinat: [-7.0053033, 107.6495618], warna: 'yellow', popup: 'Titik 4', description: 'Titik keempat ini merupakan lokasi penting di area tersebut.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '30' },
+      { koordinat: [-7.0065547, 107.6545212], warna: 'yellow', popup: 'Titik 5', description: 'Titik kelima terletak di pusat perbelanjaan.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '50' },
+      { koordinat: [-7.0033815, 107.6583764], warna: 'yellow', popup: 'Titik 6', description: 'Titik keenam adalah lokasi yang ramai dikunjungi di siang hari.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '>50' },
+      { koordinat: [-6.970812, 107.6507261], warna: 'red', popup: 'Titik 7', description: 'Titik ketujuh berada di pinggir jalan utama.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '30' },
+      { koordinat: [-6.9687327, 107.6499555], warna: 'red', popup: 'Warung Teh Enni', description: 'Warung Teh Enni terkenal dengan teh seduh yang segar.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '50' },
+      { koordinat: [-6.975835, 107.649511], warna: 'red', popup: 'Titik 9', description: 'Titik sembilan memiliki banyak fasilitas parkir.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg', pack: '>50' }
     ];
 
     var markers = { red: [], green: [], yellow: [] };  // Menyimpan marker berdasarkan warna
@@ -161,6 +171,7 @@
 
       var marker = L.marker(item.koordinat, { icon: markerIcon })
         .bindPopup(`
+
           <div>
             <h3>${item.popup}</h3>
             <div class="panel-image" style="background-image: url('${item.gambar}');"></div>
@@ -173,23 +184,30 @@
       allMarkers.push(marker);  // Menyimpan semua marker
     });
 
-    // Fungsi untuk menampilkan marker berdasarkan warna yang dipilih
-    function showMarkersByColor(warna) {
+    // Fungsi untuk menampilkan marker berdasarkan warna dan pack
+    function showMarkers(warna, pack) {
       // Hapus semua marker yang ada
       allMarkers.forEach(function (marker) {
         map.removeLayer(marker);
       });
 
-      // Tampilkan marker sesuai warna yang dipilih
-      if (warna === 'all') {
-        allMarkers.forEach(function (marker) {
+      // Tampilkan marker sesuai filter warna dan pack
+      allMarkers.forEach(function (marker) {
+        var show = true;
+        var markerData = titik.find(t => t.koordinat[0] === marker.getLatLng().lat && t.koordinat[1] === marker.getLatLng().lng);
+
+        if (warna !== 'all' && markerData.warna !== warna) {
+          show = false;
+        }
+
+        if (pack !== 'all' && markerData.pack !== pack) {
+          show = false;
+        }
+
+        if (show) {
           marker.addTo(map);
-        });
-      } else {
-        markers[warna].forEach(function (marker) {
-          marker.addTo(map);
-        });
-      }
+        }
+      });
     }
 
     // Menambahkan marker ke peta (menampilkan semua marker di awal)
@@ -199,7 +217,14 @@
 
     // Mengatur filter berdasarkan pilihan dropdown
     document.getElementById('filterDropdown').addEventListener('change', function (e) {
-      showMarkersByColor(e.target.value);
+      var selectedPack = document.getElementById('packFilterDropdown').value;
+      showMarkers(e.target.value, selectedPack);
+    });
+
+    // Mengatur filter pack
+    document.getElementById('packFilterDropdown').addEventListener('change', function (e) {
+      var selectedColor = document.getElementById('filterDropdown').value;
+      showMarkers(selectedColor, e.target.value);
     });
 
     // Lokasi khusus (lokasi saya) - Menambahkan titik kamu sendiri (contoh)
