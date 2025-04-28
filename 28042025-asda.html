@@ -6,59 +6,200 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     /* Styling untuk tombol */
-    #locateButton {
+    #locateButton, #filterDropdown {
       position: absolute;
-      top: 10px;
-      left: 10px;
+      bottom: 20px;
       background-color: #4CAF50;
       color: white;
-      padding: 10px;
+      padding: 12px 18px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
       z-index: 1000;
+      transition: background-color 0.3s, transform 0.2s;
     }
-    #locateButton:hover {
+
+    #locateButton:hover, #filterDropdown:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    /* Posisi tombol di kiri */
+    #locateButton {
+      left: 10px;
+    }
+
+    /* Dropdown filter */
+    #filterDropdown {
+      left: 120px;
+      background-color: #008CBA;
+    }
+
+    /* Styling untuk popup panel keterangan */
+    .leaflet-popup-content-wrapper {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      max-width: 350px;
+      text-align: left;
+    }
+
+    .leaflet-popup-content {
+      margin: 0;
+    }
+
+    .leaflet-popup-content button {
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .leaflet-popup-content button:hover {
       background-color: #45a049;
     }
+
+    /* Styling untuk panel dengan gambar */
+    .panel-image {
+      width: 80px;
+      height: 80px;
+      background-color: #f0f0f0;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .panel-content {
+      font-family: Arial, sans-serif;
+    }
+
+    .panel-content h3 {
+      margin: 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .panel-content p {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Styling untuk button di popup */
+    .leaflet-popup-content button {
+      background-color: #008CBA;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .leaflet-popup-content button:hover {
+      background-color: #007bb5;
+    }
+
   </style>
 </head>
 <body>
   <div id="map" style="height: 100vh;"></div>
   <button id="locateButton">Kembali ke Lokasi Saya</button>
+  <select id="filterDropdown">
+    <option value="all">Tanpa Filter</option>
+    <option value="red">Filter Merah</option>
+    <option value="green">Filter Hijau</option>
+    <option value="yellow">Filter Kuning</option>
+  </select>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // Inisialisasi peta
-    var map = L.map('map').setView([-6.997, 107.635], 15);
+    var map = L.map('map').setView([-6.997, 107.635], 13);
 
     // Tambahkan layer peta
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+      attribution: 'Bola Susu Pau Maps'
     }).addTo(map);
 
-    // Data titik dengan koordinat dan warna (untuk memudahkan penggantian)
+    // Data titik dengan koordinat, warna, deskripsi dan gambar
     var titik = [
-      { koordinat: [-6.9857917, 107.6448421], warna: 'green', popup: 'Warung Pak Amas' },
-      { koordinat: [-6.9880258, 107.6468441], warna: 'green', popup: 'Titik 2' },
-      { koordinat: [-6.9886601, 107.6520015], warna: 'green', popup: 'MUR BAUT & ALAT TEKNIK' },
-      { koordinat: [-7.0053033, 107.6495618], warna: 'yellow', popup: 'Titik 4' },
-      { koordinat: [-7.0065547, 107.6545212], warna: 'yellow', popup: 'Titik 5' },
-      { koordinat: [-7.0033815, 107.6583764], warna: 'yellow', popup: 'Titik 6' },
-      { koordinat: [-6.970812, 107.6507261], warna: 'red', popup: 'Titik 7' },
-      { koordinat: [-6.9687327, 107.6499555], warna: 'red', popup: 'Warung Teh Enni' },
-      { koordinat: [-6.975835, 107.649511], warna: 'red', popup: 'Titik 9' }
+      { koordinat: [-6.9857917, 107.6448421], warna: 'green', popup: 'Warung Pak Amas', description: 'Warung Pak Amas menjual makanan ringan dan minuman.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-6.9880258, 107.6468441], warna: 'green', popup: 'Titik 2', description: 'Ini adalah titik kedua yang memiliki banyak pengunjung.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-6.9886601, 107.6520015], warna: 'green', popup: 'MUR BAUT & ALAT TEKNIK', description: 'Toko alat teknik dengan berbagai kebutuhan industri.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-7.0053033, 107.6495618], warna: 'yellow', popup: 'Titik 4', description: 'Titik keempat ini merupakan lokasi penting di area tersebut.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-7.0065547, 107.6545212], warna: 'yellow', popup: 'Titik 5', description: 'Titik kelima terletak di pusat perbelanjaan.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-7.0033815, 107.6583764], warna: 'yellow', popup: 'Titik 6', description: 'Titik keenam adalah lokasi yang ramai dikunjungi di siang hari.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-6.970812, 107.6507261], warna: 'red', popup: 'Titik 7', description: 'Titik ketujuh berada di pinggir jalan utama.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-6.9687327, 107.6499555], warna: 'red', popup: 'Warung Teh Enni', description: 'Warung Teh Enni terkenal dengan teh seduh yang segar.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' },
+      { koordinat: [-6.975835, 107.649511], warna: 'red', popup: 'Titik 9', description: 'Titik sembilan memiliki banyak fasilitas parkir.', gambar: 'https://bolasusupau.wordpress.com/wp-content/uploads/2024/06/imas3_ciganitri.jpg' }
     ];
 
-    // Loop untuk menambahkan marker dengan warna berbeda sesuai data
+    var markers = { red: [], green: [], yellow: [] };  // Menyimpan marker berdasarkan warna
+    var allMarkers = [];  // Semua marker
+
+    // Menambahkan marker dengan warna dan ikon sesuai data
     titik.forEach(function (item) {
-      L.circleMarker(item.koordinat, {
-        color: item.warna,  // Warna garis marker
-        fillColor: item.warna, // Warna isi marker
-        fillOpacity: 0.7,  // Opasitas warna isi
-        radius: 10  // Ukuran marker
-      }).addTo(map)
-      .bindPopup(item.popup);  // Menampilkan popup dengan nama titik
+      var iconUrl;
+      if (item.warna === 'red') {
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/14090/14090313.png'; // Icon merah
+      } else if (item.warna === 'green') {
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/14090/14090489.png'; // Icon hijau
+      } else if (item.warna === 'yellow') {
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/727/727606.png'; // Icon kuning
+      }
+
+      var markerIcon = L.icon({
+        iconUrl: iconUrl,
+        iconSize: [42, 42],  // Tetapkan ukuran marker tetap
+        iconAnchor: [22, 42], // Titik referensi ikon
+        popupAnchor: [0, -30] // Posisi popup
+      });
+
+      var marker = L.marker(item.koordinat, { icon: markerIcon })
+        .bindPopup(`
+          <div>
+            <h3>${item.popup}</h3>
+            <div class="panel-image" style="background-image: url('${item.gambar}');"></div>
+            <p>${item.description}</p>
+            <button>Informasi Lebih Lanjut</button>
+          </div>
+        `);
+
+      markers[item.warna].push(marker); // Menyimpan marker dalam kategori warna
+      allMarkers.push(marker);  // Menyimpan semua marker
+    });
+
+    // Fungsi untuk menampilkan marker berdasarkan warna yang dipilih
+    function showMarkersByColor(warna) {
+      // Hapus semua marker yang ada
+      allMarkers.forEach(function (marker) {
+        map.removeLayer(marker);
+      });
+
+      // Tampilkan marker sesuai warna yang dipilih
+      if (warna === 'all') {
+        allMarkers.forEach(function (marker) {
+          marker.addTo(map);
+        });
+      } else {
+        markers[warna].forEach(function (marker) {
+          marker.addTo(map);
+        });
+      }
+    }
+
+    // Menambahkan marker ke peta (menampilkan semua marker di awal)
+    allMarkers.forEach(function (marker) {
+      marker.addTo(map);
+    });
+
+    // Mengatur filter berdasarkan pilihan dropdown
+    document.getElementById('filterDropdown').addEventListener('change', function (e) {
+      showMarkersByColor(e.target.value);
     });
 
     // Lokasi khusus (lokasi saya) - Menambahkan titik kamu sendiri (contoh)
@@ -66,7 +207,7 @@
 
     // Buat marker khusus untuk "saya"
     var myIcon = L.icon({
-      iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png', // contoh icon custom
+      iconUrl: 'https://cdn-icons-png.flaticon.com/512/10039/10039536.png', // icon khusus
       iconSize: [38, 38], // ukuran ikon
       iconAnchor: [19, 38], // posisi titik ikon
       popupAnchor: [0, -38] // posisi popup relatif ke ikon
@@ -103,6 +244,10 @@
       map.setView(lokasiSaya, 15);  // Pindahkan tampilan peta ke lokasi saya
     });
 
+    // Menangani klik di luar popup untuk menutupnya
+    map.on('click', function(e) {
+      map.closePopup();
+    });
   </script>
 </body>
 </html>
